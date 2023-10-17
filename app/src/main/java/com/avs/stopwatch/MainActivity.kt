@@ -10,10 +10,22 @@ class MainActivity : AppCompatActivity() {
     lateinit var stopwatch : Chronometer
     var running = false
     var offset:Long = 0
+    val OFFSET_KEY = "offset"
+    val RUNNING_KEY = "running"
+    val BASE_KEY = "base"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         stopwatch = findViewById(R.id.stopwatch)
+        if (savedInstanceState != null){
+            offset = savedInstanceState.getLong(OFFSET_KEY)
+            running = savedInstanceState.getBoolean(RUNNING_KEY)
+            if (running){
+                stopwatch.base = savedInstanceState.getLong((BASE_KEY))
+                stopwatch.start()
+            }
+            else setBaseTime()
+        }
         val startButton = findViewById<Button>(R.id.start_button)
         startButton.setOnClickListener{
             if (!running){
@@ -35,6 +47,13 @@ class MainActivity : AppCompatActivity() {
             offset = 0
             setBaseTime()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putLong(OFFSET_KEY, offset)
+        outState.putBoolean(RUNNING_KEY, running)
+        outState.putLong(BASE_KEY, stopwatch.base)
+        super.onSaveInstanceState(outState)
     }
 
     fun setBaseTime(){
